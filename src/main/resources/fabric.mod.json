@@ -18,8 +18,8 @@
 
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "net.fabricmc.example.ExampleMod"
+    "server": [
+      "ru.aiefu.discordlink.discord.DiscordLink"
     ]
   },
   "mixins": [
