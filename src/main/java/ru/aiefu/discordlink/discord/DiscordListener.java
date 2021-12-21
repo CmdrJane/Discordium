@@ -47,11 +47,13 @@ public class DiscordListener extends ListenerAdapter {
                 TextComponent cp = new TextComponent("[Discord] ");
                 Style s = cp.getStyle();
                 Member member = e.getMember();
-                String role = member.getRoles().isEmpty() ? "" : member.getRoles().get(0).getName();
-                cp.withStyle(s.withColor(6955481))
-                        .append(getChatComponent(role, member))
-                        .append(new TextComponent(msg).withStyle(ChatFormatting.WHITE));
-                server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);
+                if(member != null) {
+                    String role = member.getRoles().isEmpty() ? "" : member.getRoles().get(0).getName();
+                    cp.withStyle(s.withColor(6955481))
+                            .append(getChatComponent(role, member))
+                            .append(new TextComponent(msg).withStyle(ChatFormatting.WHITE));
+                    server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);
+                }
             }
         }
     }

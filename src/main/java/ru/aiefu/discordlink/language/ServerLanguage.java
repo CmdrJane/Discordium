@@ -7,12 +7,11 @@ import net.fabricmc.loader.api.metadata.ModMetadata;
 import net.fabricmc.loader.impl.launch.FabricLauncherBase;
 import net.fabricmc.loader.impl.metadata.EntrypointMetadata;
 import net.fabricmc.loader.impl.metadata.LoaderModMetadata;
+import net.minecraft.client.resources.language.FormattedBidiReorder;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FormattedCharSequence;
-import net.minecraft.util.StringDecomposer;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import ru.aiefu.discordlink.discord.DiscordLink;
@@ -25,7 +24,6 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 public class ServerLanguage extends Language {
     private Map<String, String> storage;
@@ -73,7 +71,7 @@ public class ServerLanguage extends Language {
                             }
                             if (inputStream != null) {
                                 loadFromJson(inputStream, builder::put);
-                                logger.info(String.format("Loaded locale %s for mod %s", locale, meta.getName()));
+                                logger.info(String.format("Loaded language %s for mod %s", locale, meta.getName()));
                             } else
                                 logger.error(String.format("Failed to load default en_us locale for mod %s", meta.getName()));
                         } catch (ClassNotFoundException ignored) {}
@@ -98,7 +96,7 @@ public class ServerLanguage extends Language {
         }
         if(stream != null){
             loadFromJson(stream, builder::put);
-            logger.info("Loaded minecraft locale " + locale);
+            logger.info("Loaded minecraft language " + locale);
         }
     }
 
@@ -121,6 +119,6 @@ public class ServerLanguage extends Language {
 
     @Override
     public FormattedCharSequence getVisualOrder(@NotNull FormattedText formattedText) {
-        return (formattedCharSink) -> formattedText.visit((style, string) -> StringDecomposer.iterateFormatted(string, style, formattedCharSink) ? Optional.empty() : FormattedText.STOP_ITERATION, Style.EMPTY).isPresent();
+        return FormattedBidiReorder.reorder(formattedText, this.isBidirectional);
     }
 }
