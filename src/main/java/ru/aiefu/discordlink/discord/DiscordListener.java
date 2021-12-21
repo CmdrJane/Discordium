@@ -57,7 +57,7 @@ public class DiscordListener extends ListenerAdapter {
     }
 
     private MutableComponent getChatComponent(String role, Member member){
-        return new TextComponent(role + " " + member.getEffectiveName()).setStyle(Style.EMPTY.withColor(member.getColorRaw()));
+        return new TextComponent(role + " " + member.getEffectiveName() + ": ").setStyle(Style.EMPTY.withColor(member.getColorRaw()));
     }
 
     private void handleConsoleInput(MessageReceivedEvent e, DedicatedServer server){

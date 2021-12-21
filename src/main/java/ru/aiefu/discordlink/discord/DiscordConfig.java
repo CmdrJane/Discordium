@@ -50,8 +50,8 @@ public class DiscordConfig {
         String msg2 = verificationDisconnect;
         int j = msg2.indexOf("{code}");
         if(j != -1){
-            vDisconnectMsg1 = msg2.substring(0, i);
-            vDisconnectMsg2 = msg2.substring(i +6);
+            vDisconnectMsg1 = msg2.substring(0, j);
+            vDisconnectMsg2 = msg2.substring(j +6);
         } else vDisconnectMsg1 = msg2;
     }
 }

@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
@@ -30,6 +31,21 @@ public class ServerLanguage extends Language {
     private Map<String, String> storage;
     private boolean isBidirectional = false;
     private static final Logger logger = DiscordLink.logger;
+    private static final HashSet<String> excludeModIDs = new HashSet<>();
+
+    public ServerLanguage(){
+        excludeModIDs.add("fabric-api-lookup-api-v1");
+        excludeModIDs.add("fabric-events-interaction-v0");
+        excludeModIDs.add("confabricate");
+        excludeModIDs.add("fabric-registry-sync-v0");
+        excludeModIDs.add("fabric-structure-api-v1");
+        excludeModIDs.add("fabric-events-lifecycle-v0");
+        excludeModIDs.add("fabric-lifecycle-events-v1");
+        excludeModIDs.add("fabric-gametest-api-v1");
+        excludeModIDs.add("fabric-mining-level-api-v1");
+        excludeModIDs.add("fabric-tool-attribute-api-v1");
+        excludeModIDs.add("fabric-networking-v0");
+    }
 
     public void loadAllLanguagesIncludingModded(String languageKey, boolean bl){
         this.isBidirectional = bl;
@@ -43,7 +59,7 @@ public class ServerLanguage extends Language {
         if(!mods.isEmpty()){
             for (ModContainer c : mods){
                 ModMetadata meta = c.getMetadata();
-                if(meta instanceof LoaderModMetadata loaderModMetadata){
+                if(meta instanceof LoaderModMetadata loaderModMetadata && !excludeModIDs.contains(meta.getId())){
                     EntrypointMetadata data = loaderModMetadata.getEntrypoints("main").stream().findFirst().orElse(null);
                     if(data != null) {
                         try {

@@ -2,7 +2,7 @@ package ru.aiefu.discordlink;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 
@@ -16,5 +16,5 @@ public interface OnPlayerMessageEvent {
                 }
             });
 
-    void onMessage(ServerPlayer player, String msg, Component textComponent);
+    void onMessage(ServerPlayer player, String msg, BaseComponent textComponent);
 }

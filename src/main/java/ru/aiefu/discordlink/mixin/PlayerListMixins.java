@@ -57,7 +57,7 @@ public class PlayerListMixins {
                     DiscordLink.pendingPlayers.put(authCode, new VerificationData(gameProfile.getName(), uuid, DiscordLink.currentTime + 600_000));
                     DiscordLink.pendingPlayersUUID.put(uuid, authCode);
                     cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
-                            .append(new TextComponent(" " + auth).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
+                            .append(new TextComponent(auth).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
                             .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
                 } else {
                     cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))

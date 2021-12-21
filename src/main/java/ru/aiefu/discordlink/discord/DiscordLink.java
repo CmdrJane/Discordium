@@ -13,8 +13,8 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.dedicated.DedicatedServer;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
@@ -100,22 +100,22 @@ public class DiscordLink implements DedicatedServerModInitializer {
                     if(profile != null){
                         Member m = guild.getMemberById(profile.discordId);
                         if(m != null) {
-                            postWebHookMsg(msg, m.getNickname(),m.getEffectiveAvatarUrl());
+                            postWebHookMsg(msg, m.getNickname(), m.getEffectiveAvatarUrl());
                             return;
                         }
                     }
                 }
                 postWebHookMsg(msg, name, getPlayerIconUrl(name, uuid));
             } else {
-                postChatMessage((TextComponent) textComponent);
+                postChatMessage(textComponent);
             }
         });
     }
-    @SuppressWarnings("all")
+
     public static void initialize(ConfigManager manager) throws LoginException, InterruptedException {
         jda = JDABuilder.createDefault(config.token).setHttpClient((new OkHttpClient.Builder()).protocols(Collections.singletonList(Protocol.HTTP_1_1)).build()).setMemberCachePolicy(MemberCachePolicy.ALL).enableIntents(GatewayIntent.GUILD_MEMBERS).addEventListeners(new Object[]{new DiscordListener()}).build();
         jda.awaitReady();
-        if(config.serverId.length() > 0){
+        if(!config.serverId.isEmpty()){
             guild = jda.getGuildById(config.serverId);
             if(guild != null && config.preloadDiscordMembers)
                 guild.loadMembers();
@@ -125,13 +125,14 @@ public class DiscordLink implements DedicatedServerModInitializer {
         consoleChannel = jda.getTextChannelById(config.consoleChannelId);
         String webhookUrl = config.webhookUrl;
         boolean bl = config.enableWebhook;
-        if(webhookUrl.length() > 0){
-            for (Webhook w : chatChannel.retrieveWebhooks().complete()){
-                if(w.getUrl().equals(webhookUrl)){
-                    bl = false;
-                }
+        if(bl && config.webhookUrl.length() > 0)
+        for (Webhook w : chatChannel.retrieveWebhooks().complete()){
+            if(w.getUrl().equals(webhookUrl)){
+                bl = false;
+                break;
             }
         }
+
         if(bl){
             config.webhookUrl = chatChannel.createWebhook("Minecraft Chat Message Forwarding").complete().getUrl();
             manager.writeCurrentConfigInstance();
@@ -146,9 +147,9 @@ public class DiscordLink implements DedicatedServerModInitializer {
         }
     }
 
-    public static void postChatMessage(TextComponent component){
+    public static void postChatMessage(BaseComponent component){
         if(chatChannel != null && !stopped){
-            StringBuilder sb = new StringBuilder(component.getText());
+            StringBuilder sb = new StringBuilder(component.getString());
             for (Component c : component.getSiblings()){
                 sb.append(c.getString());
             }
@@ -215,7 +216,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
     }
 
     public static void sendWebhook(JsonObject json) throws IOException {
-        if(!stopped)
+        if(!stopped && config.webhookUrl.length() > 0)
         Unirest.post(config.webhookUrl).header("Content-type", "application/json").body(new Gson().toJson(json)).asStringAsync();
     }
 
