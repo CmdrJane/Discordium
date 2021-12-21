@@ -15,6 +15,9 @@ public class DiscordConfig {
     public boolean forceLinking = false;
     public boolean useDiscordData = false;
 
+    public String targetLocalization = "en_us";
+    public boolean isBidirectional = false;
+
     public String startupMsg = ":white_check_mark: **Server started!**";
     public String serverStopMsg = ":octagonal_sign: **Server stopped!**";
 

@@ -33,7 +33,13 @@ public class ConfigManager {
 
     public void craftPaths() throws IOException {
         if(!Files.isDirectory(Paths.get("./config/discord-chat"))){
+            Files.createDirectories(Paths.get("./config/discord-chat"));
+        }
+        if(!Files.isDirectory(Paths.get("./config/discord-chat/linked-profiles"))){
             Files.createDirectories(Paths.get("./config/discord-chat/linked-profiles"));
+        }
+        if(!Files.isDirectory(Paths.get("./config/discord-chat/languages"))){
+            Files.createDirectories(Paths.get("./config/discord-chat/languages"));
         }
     }
 

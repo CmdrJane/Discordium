@@ -111,7 +111,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
             }
         });
     }
-
+    @SuppressWarnings("all")
     public static void initialize(ConfigManager manager) throws LoginException, InterruptedException {
         jda = JDABuilder.createDefault(config.token).setHttpClient((new OkHttpClient.Builder()).protocols(Collections.singletonList(Protocol.HTTP_1_1)).build()).setMemberCachePolicy(MemberCachePolicy.ALL).enableIntents(GatewayIntent.GUILD_MEMBERS).addEventListeners(new Object[]{new DiscordListener()}).build();
         jda.awaitReady();

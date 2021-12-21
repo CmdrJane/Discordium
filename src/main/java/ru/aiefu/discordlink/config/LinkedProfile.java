@@ -1,5 +1,6 @@
 package ru.aiefu.discordlink.config;
 
+@SuppressWarnings("all")
 public class LinkedProfile {
     public final String name;
     public final String uuid;
