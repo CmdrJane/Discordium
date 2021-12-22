@@ -1,6 +1,9 @@
 package ru.aiefu.discordlink.language;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.fabricmc.loader.api.metadata.ModMetadata;
@@ -12,16 +15,19 @@ import net.minecraft.locale.Language;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.FormattedCharSequence;
+import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import ru.aiefu.discordlink.discord.DiscordLink;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
@@ -50,7 +56,7 @@ public class ServerLanguage extends Language {
         ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
         try {
             loadMinecraftLanguage(languageKey, builder);
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         Collection<ModContainer> mods = FabricLoader.getInstance().getAllMods();
@@ -83,13 +89,32 @@ public class ServerLanguage extends Language {
         inject(this);
     }
 
-    private void loadMinecraftLanguage(String languageKey, ImmutableMap.Builder<String, String> builder) throws FileNotFoundException {
+    private void loadMinecraftLanguage(String languageKey, ImmutableMap.Builder<String, String> builder) throws IOException {
         String path = String.format("./config/discord-chat/languages/%s.json", languageKey);
-        InputStream stream;
+        InputStream stream = null;
         String locale = languageKey;
         if(Files.exists(Paths.get(path))){
             stream = new FileInputStream(path);
         } else {
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://launchermeta.mojang.com/v1/packages/6b87c76d1edcb1fb0d933382cbb8bb8483c362c4/1.18.json").openConnection();
+            Gson gson = new Gson();
+            JsonObject indexes = gson.fromJson(new InputStreamReader(connection.getInputStream()), JsonObject.class);
+            HashMap<String, AssetsData> data = gson.fromJson(indexes.get("objects"), new TypeToken<HashMap<String, AssetsData>>(){}.getType());
+            AssetsData lang = data.get(String.format("minecraft/lang/%s.json", languageKey));
+            if(lang != null){
+                String hash = lang.hash;
+                connection = (HttpURLConnection) new URL(String.format("https://resources.download.minecraft.net/%s/%s", hash.substring(0, 2), hash)).openConnection();
+                stream = connection.getInputStream();
+                if(stream != null){
+                    byte[] inputArray = IOUtils.toByteArray(stream);
+                    stream = new ByteArrayInputStream(inputArray);
+                    FileOutputStream file = new FileOutputStream(path);
+                    file.write(inputArray);
+                    file.close();
+                }
+            }
+        }
+        if(stream == null) {
             stream = MinecraftServer.class.getResourceAsStream("/assets/minecraft/lang/en_us.json");
             logger.info(String.format("Failed to load minecraft locale %s, trying to load default en_us locale", locale));
             locale = "en_us(fallback)";
@@ -120,5 +145,10 @@ public class ServerLanguage extends Language {
     @Override
     public FormattedCharSequence getVisualOrder(@NotNull FormattedText formattedText) {
         return FormattedBidiReorder.reorder(formattedText, this.isBidirectional);
+    }
+
+    public static class AssetsData {
+        public String hash;
+        public double size;
     }
 }
