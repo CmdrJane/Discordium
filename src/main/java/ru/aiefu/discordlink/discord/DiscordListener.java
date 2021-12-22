@@ -20,7 +20,6 @@ import java.util.List;
 
 public class DiscordListener extends ListenerAdapter {
 
-
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
         DedicatedServer server = DiscordLink.server;

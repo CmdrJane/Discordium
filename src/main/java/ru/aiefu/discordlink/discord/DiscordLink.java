@@ -13,9 +13,13 @@ import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.advancements.Advancement;
+import net.minecraft.locale.Language;
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.dedicated.DedicatedServer;
+import net.minecraft.server.level.ServerPlayer;
 import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import org.apache.logging.log4j.LogManager;
@@ -25,6 +29,7 @@ import ru.aiefu.discordlink.OnPlayerMessageEvent;
 import ru.aiefu.discordlink.ProfileLinkCommand;
 import ru.aiefu.discordlink.config.ConfigManager;
 import ru.aiefu.discordlink.config.LinkedProfile;
+import ru.aiefu.discordlink.integraton.LightChatIntegration;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
@@ -72,8 +77,15 @@ public class DiscordLink implements DedicatedServerModInitializer {
                 ProfileLinkCommand.register(dispatcher);
             }
         });
-        ServerLifecycleEvents.SERVER_STARTING.register(server -> DiscordLink.server = (DedicatedServer) server);
-        ServerLifecycleEvents.SERVER_STARTED.register(server -> DiscordLink.chatChannel.sendMessage(DiscordLink.config.startupMsg).queue());
+        ServerLifecycleEvents.SERVER_STARTED.register(server -> {
+            DiscordLink.server = (DedicatedServer) server;
+            DiscordLink.chatChannel.sendMessage(DiscordLink.config.startupMsg).queue();
+            if(FabricLoader.getInstance().isModLoaded("lightchat")){
+                new LightChatIntegration().onGlobalMsgSubscribe();
+            } else {
+                OnPlayerMessageEvent.EVENT.register(DiscordLink::onPlayerMessage);
+            }
+        });
         ServerTickEvents.START_SERVER_TICK.register(server -> currentTime = System.currentTimeMillis());
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             int tickCount = server.getTickCount();
@@ -91,25 +103,6 @@ public class DiscordLink implements DedicatedServerModInitializer {
             }
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> DiscordLink.shutdown());
-        OnPlayerMessageEvent.EVENT.register((player, msg, textComponent) -> {
-            if(config.enableWebhook){
-                String uuid = player.getStringUUID();
-                String name = player.getScoreboardName();
-                if(config.enableAccountLinking && guild != null && config.useDiscordData){
-                    LinkedProfile profile = linkedPlayers.get(uuid);
-                    if(profile != null){
-                        Member m = guild.getMemberById(profile.discordId);
-                        if(m != null) {
-                            postWebHookMsg(msg, m.getNickname(), m.getEffectiveAvatarUrl());
-                            return;
-                        }
-                    }
-                }
-                postWebHookMsg(msg, name, getPlayerIconUrl(name, uuid));
-            } else {
-                postChatMessage(textComponent);
-            }
-        });
     }
 
     public static void initialize(ConfigManager manager) throws LoginException, InterruptedException {
@@ -157,6 +150,26 @@ public class DiscordLink implements DedicatedServerModInitializer {
         }
     }
 
+    public static void onPlayerMessage(ServerPlayer player, String msg, BaseComponent textComponent){
+        if(config.enableWebhook){
+            String uuid = player.getStringUUID();
+            String name = player.getScoreboardName();
+            if(config.enableAccountLinking && guild != null && config.useDiscordData){
+                LinkedProfile profile = linkedPlayers.get(uuid);
+                if(profile != null){
+                    Member m = guild.getMemberById(profile.discordId);
+                    if(m != null) {
+                        postWebHookMsg(msg, m.getNickname(), m.getEffectiveAvatarUrl());
+                        return;
+                    }
+                }
+            }
+            postWebHookMsg(msg, name, getPlayerIconUrl(name, uuid));
+        } else {
+            postChatMessage(textComponent);
+        }
+    }
+
     public static void postWebHookMsg(String msg, String username, String avatarUrl){
         if(chatChannel != null && !stopped) {
             JsonObject object = new JsonObject();
@@ -185,9 +198,12 @@ public class DiscordLink implements DedicatedServerModInitializer {
         sendEmbed(chatChannel, e.build());
     }
 
-    public static void sendAdvancement(String username, String adv, String uuid){
+    public static void sendAdvancement(String username, Advancement adv, String uuid){
         EmbedBuilder e = new EmbedBuilder();
-        e.setAuthor(config.advancementMsg.replaceAll("\\{username}", username).replaceAll("\\{advancement}", adv), null, getPlayerIconUrl(username, uuid));
+        e.setAuthor(String.format(Language.getInstance().getOrDefault("chat.type.advancement." + adv.getDisplay().getFrame().getName()), username, adv.getDisplay().getTitle().getString()), null, getPlayerIconUrl(username, uuid));
+        if(config.appendAdvancementDescription){
+            e.setDescription(String.format("** %s **", adv.getDisplay().getDescription().getString()));
+        }
         e.setColor(12524269);
         sendEmbed(chatChannel, e.build());
     }

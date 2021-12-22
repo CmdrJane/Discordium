@@ -16,6 +16,6 @@ public class PlayerAdvancementsMixins {
 
     @Inject(method = "award",  at =@At(value = "INVOKE", target = "net/minecraft/server/players/PlayerList.broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", shift = At.Shift.AFTER))
     private void sendAdvancement(Advancement advancement, String string, CallbackInfoReturnable<Boolean> cir){
-        DiscordLink.sendAdvancement(this.player.getScoreboardName(), advancement.getChatComponent().getString(), this.player.getStringUUID());
+        DiscordLink.sendAdvancement(this.player.getScoreboardName(), advancement, this.player.getStringUUID());
     }
 }

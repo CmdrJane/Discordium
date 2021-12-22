@@ -23,7 +23,7 @@ public class DiscordConfig {
 
     public String joinMessage = "{username} joined the server!";
     public String disconnectMessage = "{username} left the server!";
-    public String advancementMsg = "{username} has made the achievement {advancement}";
+    public boolean appendAdvancementDescription = true;
 
     public String onlinePlayersMsg = "Players online: ";
     public String noPlayersMsg = "Currently there are no players on server";
@@ -33,6 +33,7 @@ public class DiscordConfig {
     public String successfulVerificationMsg = "Successfully linked discord account to your game account {username}({uuid})";
     public String commandLinkMsg = "Your code is {code}. Send this code to {botname} PM.";
 
+    public int config_version = 1;
 
     public transient String vDisconnectMsg1;
     public transient String vDisconnectMsg2 = "";
