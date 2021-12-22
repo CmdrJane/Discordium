@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.language;
+package ru.aiefu.discordium.language;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
@@ -18,7 +18,7 @@ import net.minecraft.util.FormattedCharSequence;
 import org.apache.commons.io.IOUtils;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordLink;
 
 import java.io.*;
 import java.net.HttpURLConnection;

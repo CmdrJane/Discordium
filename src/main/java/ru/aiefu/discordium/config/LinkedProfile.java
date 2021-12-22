@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.config;
+package ru.aiefu.discordium.config;
 
 @SuppressWarnings("all")
 public class LinkedProfile {

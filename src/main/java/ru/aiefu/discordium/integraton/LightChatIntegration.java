@@ -1,6 +1,6 @@
-package ru.aiefu.discordlink.integraton;
+package ru.aiefu.discordium.integraton;
 
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordLink;
 import ru.aiefu.lightchat.OnPlayerGlobalMessageEvent;
 
 public class LightChatIntegration {

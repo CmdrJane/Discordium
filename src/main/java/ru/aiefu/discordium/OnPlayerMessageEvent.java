@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink;
+package ru.aiefu.discordium;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.discord;
+package ru.aiefu.discordium.discord;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -24,12 +24,12 @@ import okhttp3.OkHttpClient;
 import okhttp3.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.aiefu.discordlink.ConsoleFilter;
-import ru.aiefu.discordlink.OnPlayerMessageEvent;
-import ru.aiefu.discordlink.ProfileLinkCommand;
-import ru.aiefu.discordlink.config.ConfigManager;
-import ru.aiefu.discordlink.config.LinkedProfile;
-import ru.aiefu.discordlink.integraton.LightChatIntegration;
+import ru.aiefu.discordium.ConsoleFilter;
+import ru.aiefu.discordium.OnPlayerMessageEvent;
+import ru.aiefu.discordium.ProfileLinkCommand;
+import ru.aiefu.discordium.config.ConfigManager;
+import ru.aiefu.discordium.config.LinkedProfile;
+import ru.aiefu.discordium.integraton.LightChatIntegration;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
@@ -44,7 +44,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
     public static TextChannel consoleChannel;
     public static DiscordConfig config;
     public static DedicatedServer server;
-    public static Logger logger = LogManager.getLogger("Discord-Link");
+    public static Logger logger = LogManager.getLogger("Discordium");
 
     public static HashMap<String, LinkedProfile> linkedPlayers = new HashMap<>();
     public static HashMap<Integer, VerificationData> pendingPlayers = new HashMap<>();

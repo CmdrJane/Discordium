@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.mixin;
+package ru.aiefu.discordium.mixin;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
@@ -12,11 +12,11 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import ru.aiefu.discordlink.config.ConfigManager;
-import ru.aiefu.discordlink.config.LinkedProfile;
-import ru.aiefu.discordlink.discord.DiscordConfig;
-import ru.aiefu.discordlink.discord.DiscordLink;
-import ru.aiefu.discordlink.discord.VerificationData;
+import ru.aiefu.discordium.config.ConfigManager;
+import ru.aiefu.discordium.config.LinkedProfile;
+import ru.aiefu.discordium.discord.DiscordConfig;
+import ru.aiefu.discordium.discord.DiscordLink;
+import ru.aiefu.discordium.discord.VerificationData;
 
 import java.io.FileNotFoundException;
 import java.net.SocketAddress;

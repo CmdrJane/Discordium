@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.mixin;
+package ru.aiefu.discordium.mixin;
 
 import net.minecraft.commands.Commands;
 import net.minecraft.core.RegistryAccess;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import ru.aiefu.discordlink.language.ServerLanguageManager;
+import ru.aiefu.discordium.language.ServerLanguageManager;
 
 @Mixin(ServerResources.class)
 public class ServerResourcesMixins {

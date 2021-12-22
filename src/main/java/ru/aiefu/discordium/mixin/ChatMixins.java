@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.mixin;
+package ru.aiefu.discordium.mixin;
 
 import net.minecraft.network.chat.BaseComponent;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import ru.aiefu.discordlink.OnPlayerMessageEvent;
+import ru.aiefu.discordium.OnPlayerMessageEvent;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ChatMixins {

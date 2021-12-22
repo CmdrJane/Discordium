@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink;
+package ru.aiefu.discordium;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
@@ -6,7 +6,7 @@ import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordLink;
 
 import java.text.SimpleDateFormat;
 

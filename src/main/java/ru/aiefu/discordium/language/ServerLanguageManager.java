@@ -1,10 +1,10 @@
-package ru.aiefu.discordlink.language;
+package ru.aiefu.discordium.language;
 
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.ResourceManagerReloadListener;
 import org.jetbrains.annotations.NotNull;
-import ru.aiefu.discordlink.discord.DiscordConfig;
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordConfig;
+import ru.aiefu.discordium.discord.DiscordLink;
 
 
 public class ServerLanguageManager implements ResourceManagerReloadListener {

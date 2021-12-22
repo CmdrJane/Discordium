@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.mixin;
+package ru.aiefu.discordium.mixin;
 
 import net.minecraft.advancements.Advancement;
 import net.minecraft.server.PlayerAdvancements;
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordLink;
 
 @Mixin(PlayerAdvancements.class)
 public class PlayerAdvancementsMixins {

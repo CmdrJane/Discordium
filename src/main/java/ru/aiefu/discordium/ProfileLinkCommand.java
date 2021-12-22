@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink;
+package ru.aiefu.discordium;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -10,9 +10,9 @@ import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.server.level.ServerPlayer;
-import ru.aiefu.discordlink.discord.DiscordConfig;
-import ru.aiefu.discordlink.discord.DiscordLink;
-import ru.aiefu.discordlink.discord.VerificationData;
+import ru.aiefu.discordium.discord.DiscordConfig;
+import ru.aiefu.discordium.discord.DiscordLink;
+import ru.aiefu.discordium.discord.VerificationData;
 
 import java.util.Random;
 

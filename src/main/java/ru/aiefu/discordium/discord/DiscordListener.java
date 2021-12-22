@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.discord;
+package ru.aiefu.discordium.discord;
 
 import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Member;
@@ -13,8 +13,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
-import ru.aiefu.discordlink.config.ConfigManager;
-import ru.aiefu.discordlink.config.LinkedProfile;
+import ru.aiefu.discordium.config.ConfigManager;
+import ru.aiefu.discordium.config.LinkedProfile;
 
 import java.util.List;
 
@@ -50,7 +50,7 @@ public class DiscordListener extends ListenerAdapter {
                     String role = member.getRoles().isEmpty() ? "" : member.getRoles().get(0).getName();
                     cp.withStyle(s.withColor(6955481))
                             .append(getChatComponent(role, member))
-                            .append(new TextComponent(msg).withStyle(ChatFormatting.WHITE));
+                            .append(new TextComponent(" >> " + msg).withStyle(ChatFormatting.WHITE));
                     server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);
                 }
             }
@@ -58,7 +58,7 @@ public class DiscordListener extends ListenerAdapter {
     }
 
     private MutableComponent getChatComponent(String role, Member member){
-        return new TextComponent(role + " " + member.getEffectiveName() + ": ").setStyle(Style.EMPTY.withColor(member.getColorRaw()));
+        return new TextComponent(role + " " + member.getEffectiveName()).setStyle(Style.EMPTY.withColor(member.getColorRaw()));
     }
 
     private void handleConsoleInput(MessageReceivedEvent e, DedicatedServer server){

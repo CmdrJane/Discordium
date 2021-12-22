@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.discord;
+package ru.aiefu.discordium.discord;
 
 public class DiscordConfig {
     public String token = "";

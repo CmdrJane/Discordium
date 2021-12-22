@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "discordlink",
+  "id": "discordium",
   "version": "${version}",
 
   "name": "Discord Chat Forwarding",
@@ -14,16 +14,16 @@
   },
 
   "license": "CC0-1.0",
-  "icon": "assets/discordlink/icon.png",
+  "icon": "assets/discordium/icon.png",
 
   "environment": "*",
   "entrypoints": {
     "server": [
-      "ru.aiefu.discordlink.discord.DiscordLink"
+      "ru.aiefu.discordium.discord.DiscordLink"
     ]
   },
   "mixins": [
-    "discordlink.mixins.json"
+    "discordium.mixins.json"
   ],
 
   "depends": {

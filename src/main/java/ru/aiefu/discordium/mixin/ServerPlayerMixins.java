@@ -1,4 +1,4 @@
-package ru.aiefu.discordlink.mixin;
+package ru.aiefu.discordium.mixin;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordLink;
 
 @Mixin(ServerPlayer.class)
 public abstract class ServerPlayerMixins extends Player {

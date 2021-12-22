@@ -1,10 +1,10 @@
-package ru.aiefu.discordlink.config;
+package ru.aiefu.discordium.config;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.jetbrains.annotations.Nullable;
-import ru.aiefu.discordlink.discord.DiscordConfig;
-import ru.aiefu.discordlink.discord.DiscordLink;
+import ru.aiefu.discordium.discord.DiscordConfig;
+import ru.aiefu.discordium.discord.DiscordLink;
 
 import java.io.*;
 import java.nio.file.Files;
