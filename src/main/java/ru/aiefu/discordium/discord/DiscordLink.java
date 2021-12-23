@@ -47,6 +47,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
     public static Logger logger = LogManager.getLogger("Discordium");
 
     public static HashMap<String, LinkedProfile> linkedPlayers = new HashMap<>();
+    public static HashMap<String, String> linkedPlayersByName = new HashMap<>();
     public static HashMap<Integer, VerificationData> pendingPlayers = new HashMap<>();
     public static HashMap<String, Integer> pendingPlayersUUID = new HashMap<>();
     public static long currentTime = System.currentTimeMillis();
