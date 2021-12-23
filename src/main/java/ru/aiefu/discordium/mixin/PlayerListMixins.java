@@ -36,8 +36,11 @@ public class PlayerListMixins {
     @Inject(method = "remove", at =@At("HEAD"))
     private void sendLogoutMessage(ServerPlayer serverPlayer, CallbackInfo ci){
         DiscordLink.logoutMsg(serverPlayer.getScoreboardName(), serverPlayer.getStringUUID());
-        DiscordLink.linkedPlayers.remove(serverPlayer.getGameProfile().getId().toString());
-        DiscordLink.linkedPlayersByName.remove(serverPlayer.getGameProfile().getName());
+        LinkedProfile profile = DiscordLink.linkedPlayers.get(serverPlayer.getStringUUID());
+        if(profile != null) {
+            DiscordLink.linkedPlayersByDiscordId.remove(profile.discordId);
+            DiscordLink.linkedPlayers.remove(serverPlayer.getGameProfile().getId().toString());
+        }
     }
 
     @Inject(method = "canPlayerLogin", at =@At("HEAD"), cancellable = true)
@@ -48,7 +51,7 @@ public class PlayerListMixins {
             LinkedProfile profile = ConfigManager.getLinkedProfile(uuid);
             if(profile != null){
                 DiscordLink.linkedPlayers.put(uuid, profile);
-                DiscordLink.linkedPlayersByName.put(gameProfile.getName(), profile.discordId);
+                DiscordLink.linkedPlayersByDiscordId.put(profile.discordId, gameProfile.getName());
             } else {
                 if(!DiscordLink.pendingPlayersUUID.containsKey(uuid)) {
                     int authCode = r.nextInt(100_000, 1_000_000);

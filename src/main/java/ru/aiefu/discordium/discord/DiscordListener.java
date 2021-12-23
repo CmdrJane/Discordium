@@ -12,12 +12,13 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 import ru.aiefu.discordium.config.ConfigManager;
 import ru.aiefu.discordium.config.LinkedProfile;
 
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -39,7 +40,7 @@ public class DiscordListener extends ListenerAdapter {
     }
 
     private final Pattern pattern = Pattern.compile("(?<=!@).+?(?=!@|$|\\s)");
-    private final Pattern pattern2 = Pattern.compile("!@.+?(?=!@|$|\\s)");
+    private final Pattern pattern2 = Pattern.compile("(?<=<@!).+?(?=>)");
 
     private void handleChatInput(MessageReceivedEvent e, DedicatedServer server){
         String msg = e.getMessage().getContentRaw();
@@ -48,16 +49,31 @@ public class DiscordListener extends ListenerAdapter {
                 handleCommandInput(e, server, msg.substring(1));
             } else {
                 Member member = e.getMember();
-                Set<String> playerNames = null;
+                Set<String> playerNames = new HashSet<>();
                 if(msg.contains("!@")){
                     playerNames = pattern.matcher(msg).results().map(matchResult -> matchResult.group(0).toLowerCase()).collect(Collectors.toSet());
+                }
+                if(msg.contains("<@!")){
+                    List<String> ids = pattern2.matcher(msg).results().map(matchResult -> matchResult.group(0)).collect(Collectors.toList());
+                    for (String s : ids){
+                        String name = DiscordLink.linkedPlayersByDiscordId.get(s);
+                        if(name != null){
+                            playerNames.add(name.toLowerCase());
+                            msg = msg.replaceAll("<@!" + s +">", "!@"+name);
+                        } else {
+                            Member m = e.getGuild().getMemberById(s);
+                            if(m != null){
+                                msg = msg.replaceAll("<@!" +s +">", "@" + m.getEffectiveName());
+                            } else msg = msg.replaceAll("<@!" +s + ">", "@Unknown Discord User");
+                        }
+                    }
                 }
                 if(member != null) {
                     String role = member.getRoles().isEmpty() ? "" : member.getRoles().get(0).getName();
                     MutableComponent cp = new TextComponent("[Discord] ").withStyle(style -> style.withColor(6955481))
                             .append(getChatComponent(role, member))
                             .append(new TextComponent(" >> " + msg).withStyle(ChatFormatting.WHITE));
-                    if(playerNames != null){
+                    if(!playerNames.isEmpty()){
                         MutableComponent cp2 = new TextComponent("[Discord] ").withStyle(Style.EMPTY.withColor(6955481))
                                 .append(getChatComponent(role, member));
                         for(ServerPlayer player : server.getPlayerList().getPlayers()){
@@ -65,6 +81,7 @@ public class DiscordListener extends ListenerAdapter {
                                 player.sendMessage(cp, ChatType.CHAT, Util.NIL_UUID);
                             } else {
                                 player.sendMessage(cp2.append(new TextComponent(" >> " + msg.replaceAll("(?i)!@" + player.getScoreboardName(),"§a$0§r")).withStyle(ChatFormatting.WHITE)), ChatType.CHAT, Util.NIL_UUID);
+                                player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1.0F, 1.0F);
                             }
                         }
                     } else server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);
@@ -114,7 +131,7 @@ public class DiscordListener extends ListenerAdapter {
                     ServerPlayer player = server.getPlayerList().getPlayer(UUID.fromString(id));
                     if(player != null){
                         DiscordLink.linkedPlayers.put(id, profile);
-                        DiscordLink.linkedPlayersByName.put(player.getGameProfile().getName(), profile.discordId);
+                        DiscordLink.linkedPlayersByDiscordId.put(profile.discordId, player.getGameProfile().getName());
                     }
                 }
                 e.getChannel().sendMessage(DiscordLink.config.successfulVerificationMsg
