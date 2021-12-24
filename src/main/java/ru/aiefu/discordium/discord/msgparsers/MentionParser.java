@@ -37,12 +37,12 @@ public class MentionParser implements MsgParser{
                 String name = DiscordLink.linkedPlayersByDiscordId.get(s);
                 if(name != null){
                     playerNames.add(name.toLowerCase());
-                    msg = msg.replaceAll("<@" + s +">", "!@"+name);
+                    msg = msg.replaceAll("<(@.|@)" + s +">", "!@"+name);
                 } else {
                     Member m = e.getGuild().getMemberById(s);
                     if(m != null){
-                        msg = msg.replaceAll("<@" +s +">", "@" + m.getEffectiveName());
-                    } else msg = msg.replaceAll("<@" +s + ">", "@Unknown");
+                        msg = msg.replaceAll("<(@.|@)" +s +">", "@" + m.getEffectiveName());
+                    } else msg = msg.replaceAll("<(@.|@)" +s + ">", "@Unknown");
                 }
             }
         }
