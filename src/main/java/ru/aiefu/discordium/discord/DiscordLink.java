@@ -17,7 +17,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.BaseComponent;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerPlayer;
 import okhttp3.OkHttpClient;
@@ -25,6 +24,7 @@ import okhttp3.Protocol;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import ru.aiefu.discordium.ConsoleFilter;
+import ru.aiefu.discordium.DiscordiumCommands;
 import ru.aiefu.discordium.OnPlayerMessageEvent;
 import ru.aiefu.discordium.ProfileLinkCommand;
 import ru.aiefu.discordium.config.ConfigManager;
@@ -77,6 +77,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
             e.printStackTrace();
         }
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            DiscordiumCommands.register(dispatcher);
             if(config.enableAccountLinking && !config.forceLinking){
                 ProfileLinkCommand.register(dispatcher);
             }

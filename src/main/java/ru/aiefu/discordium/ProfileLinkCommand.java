@@ -1,7 +1,6 @@
 package ru.aiefu.discordium;
 
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -34,9 +33,6 @@ public class ProfileLinkCommand {
             }
             return 0;
         })));
-        dispatcher.register(Commands.literal("discord").then(Commands.literal("enable-mention-notification")
-                .then(Commands.argument("soundstate", BoolArgumentType.bool()).executes(context ->
-                        switchNotifySoundState(context.getSource(), BoolArgumentType.getBool(context,"soundstate"))))));
     }
 
     private static int generateLinkCode(CommandSourceStack source) throws CommandSyntaxException {
@@ -71,13 +67,6 @@ public class ProfileLinkCommand {
             Files.delete(Paths.get(String.format("./config/discord-chat/linked-profiles/%s.json", id)));
             source.sendSuccess(new TextComponent(DiscordLink.config.codeUnlinkMsg), false);
         } else source.sendFailure(new TextComponent(DiscordLink.config.codeUnlinkFail));
-        return 0;
-    }
-
-    private static int switchNotifySoundState(CommandSourceStack source, boolean state) throws CommandSyntaxException {
-        IServerPlayer player = (IServerPlayer) source.getPlayerOrException();
-        player.setNotifyState(state);
-        source.sendSuccess(new TextComponent(DiscordLink.config.mentionState.replaceAll("\\{state}", String.valueOf(state))), false);
         return 0;
     }
 }
