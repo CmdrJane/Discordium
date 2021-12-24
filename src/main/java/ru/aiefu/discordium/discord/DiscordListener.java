@@ -1,28 +1,32 @@
 package ru.aiefu.discordium.discord;
 
 import net.dv8tion.jda.api.entities.ChannelType;
-import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
-import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
-import net.minecraft.network.chat.ChatType;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import org.jetbrains.annotations.NotNull;
 import ru.aiefu.discordium.config.ConfigManager;
 import ru.aiefu.discordium.config.LinkedProfile;
+import ru.aiefu.discordium.discord.msgparsers.DefaultParser;
+import ru.aiefu.discordium.discord.msgparsers.MentionParser;
+import ru.aiefu.discordium.discord.msgparsers.MsgParser;
 
-import java.util.*;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class DiscordListener extends ListenerAdapter {
+
+    private MsgParser chatHandler;
+
+    public DiscordListener(){
+        if(DiscordLink.config.enableMentions){
+            chatHandler = new MentionParser();
+        } else {
+            chatHandler = new DefaultParser();
+        }
+    }
 
     @Override
     public void onMessageReceived(@NotNull MessageReceivedEvent e) {
@@ -48,50 +52,9 @@ public class DiscordListener extends ListenerAdapter {
             if (!msg.startsWith("!@") && msg.startsWith("!")) {
                 handleCommandInput(e, server, msg.substring(1));
             } else {
-                Member member = e.getMember();
-                Set<String> playerNames = new HashSet<>();
-                if(msg.contains("!@")){
-                    playerNames = pattern.matcher(msg).results().map(matchResult -> matchResult.group(0).toLowerCase()).collect(Collectors.toSet());
-                }
-                if(msg.contains("<@!")){
-                    List<String> ids = pattern2.matcher(msg).results().map(matchResult -> matchResult.group(0)).collect(Collectors.toList());
-                    for (String s : ids){
-                        String name = DiscordLink.linkedPlayersByDiscordId.get(s);
-                        if(name != null){
-                            playerNames.add(name.toLowerCase());
-                            msg = msg.replaceAll("<@!" + s +">", "!@"+name);
-                        } else {
-                            Member m = e.getGuild().getMemberById(s);
-                            if(m != null){
-                                msg = msg.replaceAll("<@!" +s +">", "@" + m.getEffectiveName());
-                            } else msg = msg.replaceAll("<@!" +s + ">", "@Unknown Discord User");
-                        }
-                    }
-                }
-                if(member != null) {
-                    String role = member.getRoles().isEmpty() ? "" : member.getRoles().get(0).getName();
-                    MutableComponent cp = new TextComponent("[Discord] ").withStyle(style -> style.withColor(6955481))
-                            .append(getChatComponent(role, member))
-                            .append(new TextComponent(" >> " + msg).withStyle(ChatFormatting.WHITE));
-                    if(!playerNames.isEmpty()){
-                        MutableComponent cp2 = new TextComponent("[Discord] ").withStyle(Style.EMPTY.withColor(6955481))
-                                .append(getChatComponent(role, member));
-                        for(ServerPlayer player : server.getPlayerList().getPlayers()){
-                            if(!playerNames.contains(player.getScoreboardName().toLowerCase())){
-                                player.sendMessage(cp, ChatType.CHAT, Util.NIL_UUID);
-                            } else {
-                                player.sendMessage(cp2.append(new TextComponent(" >> " + msg.replaceAll("(?i)!@" + player.getScoreboardName(),"§a$0§r")).withStyle(ChatFormatting.WHITE)), ChatType.CHAT, Util.NIL_UUID);
-                                player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1.0F, 1.0F);
-                            }
-                        }
-                    } else server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);
-                }
+                chatHandler.handleChat(e, server, msg);
             }
         }
-    }
-
-    private MutableComponent getChatComponent(String role, Member member){
-        return new TextComponent(role + " " + member.getEffectiveName()).setStyle(Style.EMPTY.withColor(member.getColorRaw()));
     }
 
     private void handleConsoleInput(MessageReceivedEvent e, DedicatedServer server){

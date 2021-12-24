@@ -14,6 +14,7 @@ public class DiscordConfig {
     public boolean enableAccountLinking = false;
     public boolean forceLinking = false;
     public boolean useDiscordData = false;
+    public boolean enableMentions = false;
 
     public String targetLocalization = "en_us";
     public boolean isBidirectional = false;

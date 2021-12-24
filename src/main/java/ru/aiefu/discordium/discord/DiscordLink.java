@@ -36,7 +36,10 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class DiscordLink implements DedicatedServerModInitializer {
     public static JDA jda;
@@ -152,6 +155,9 @@ public class DiscordLink implements DedicatedServerModInitializer {
     }
 
     public static void onPlayerMessage(ServerPlayer player, String msg, BaseComponent textComponent){
+        if(config.enableMentions) {
+            msg = parseDiscordMentions(msg);
+        }
         if(config.enableWebhook){
             String uuid = player.getStringUUID();
             String name = player.getScoreboardName();
@@ -169,6 +175,23 @@ public class DiscordLink implements DedicatedServerModInitializer {
         } else {
             postChatMessage(textComponent);
         }
+    }
+
+    private static final Pattern pattern = Pattern.compile("(?<=@).+?(?=@|$|\\s)");
+
+    public static String parseDiscordMentions(String msg){
+        if(guild != null){
+            List<String> mentions = pattern.matcher(msg).results().map(matchResult -> matchResult.group(0)).collect(Collectors.toList());
+            for (String s : mentions){
+                if(User.USER_TAG.matcher(s).matches()) {
+                    Member m = guild.getMemberByTag(s);
+                    if (m != null) {
+                        msg = msg.replaceAll("@" + s, "<@!" + m.getId() + ">");
+                    }
+                }
+            }
+        }
+        return msg;
     }
 
     public static void postWebHookMsg(String msg, String username, String avatarUrl){
