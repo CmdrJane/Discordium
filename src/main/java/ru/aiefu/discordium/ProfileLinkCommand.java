@@ -57,8 +57,8 @@ public class ProfileLinkCommand {
         DiscordLink.pendingPlayers.put(authCode, new VerificationData(player.getScoreboardName(), uuid, DiscordLink.currentTime + 600_000));
         DiscordLink.pendingPlayersUUID.put(uuid, authCode);
         int finalAuthCode = authCode;
-        source.sendSuccess(new TextComponent(cfg.cLinkMsg1).withStyle(ChatFormatting.WHITE).append(new TextComponent(String.valueOf(authCode)).withStyle(style -> style.withColor(ChatFormatting.GREEN).withHoverEvent(new HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.copy.click")))
-                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(finalAuthCode))))).append(cfg.cLinkMsg2).withStyle(ChatFormatting.WHITE), false);
+        source.sendSuccess(new TextComponent(cfg.cLinkMsg1.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE).append(new TextComponent(String.valueOf(authCode)).withStyle(style -> style.withColor(ChatFormatting.GREEN).withHoverEvent(new HoverEvent(net.minecraft.network.chat.HoverEvent.Action.SHOW_TEXT, new TranslatableComponent("chat.copy.click")))
+                .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, String.valueOf(finalAuthCode))))).append(cfg.cLinkMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE), false);
         return 0;
     }
 

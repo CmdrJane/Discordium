@@ -1,6 +1,7 @@
 package ru.aiefu.discordium.discord;
 
 import net.dv8tion.jda.api.entities.ChannelType;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -12,6 +13,9 @@ import ru.aiefu.discordium.discord.msgparsers.DefaultParser;
 import ru.aiefu.discordium.discord.msgparsers.MentionParser;
 import ru.aiefu.discordium.discord.msgparsers.MsgParser;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,7 +41,11 @@ public class DiscordListener extends ListenerAdapter {
             } else if(channelId.equals(DiscordLink.config.consoleChannelId)){
                 handleConsoleInput(e, server);
             } else if(DiscordLink.config.enableAccountLinking && e.getChannelType() == ChannelType.PRIVATE){
-                tryVerify(e, server);
+                try {
+                    tryVerify(e, server);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
@@ -74,28 +82,37 @@ public class DiscordListener extends ListenerAdapter {
         }
     }
 
-    private void tryVerify(MessageReceivedEvent e, DedicatedServer server){
+    private void tryVerify(MessageReceivedEvent e, DedicatedServer server) throws IOException {
         String msg = e.getMessage().getContentRaw();
         if(msg.length() == 6 && msg.matches("[0-9]+")){
             int code = Integer.parseInt(msg);
             VerificationData data = DiscordLink.pendingPlayers.get(code);
             if(data != null){
                 String id = data.uuid();
-                String discordId = e.getAuthor().getId();
-                LinkedProfile profile = new LinkedProfile(data.name(), id, discordId);
-                ConfigManager.saveLinkedProfile(profile);
-                DiscordLink.pendingPlayersUUID.remove(id);
-                DiscordLink.pendingPlayers.remove(code);
-                if(!DiscordLink.config.forceLinking){
-                    ServerPlayer player = server.getPlayerList().getPlayer(UUID.fromString(id));
-                    if(player != null){
-                        DiscordLink.linkedPlayers.put(id, profile);
-                        DiscordLink.linkedPlayersByDiscordId.put(profile.discordId, player.getGameProfile().getName());
+                if(!Files.exists(Paths.get(String.format("./config/discord-chat/linked-profiles/%s.json", id)))) {
+                    String discordId = e.getAuthor().getId();
+                    LinkedProfile profile = new LinkedProfile(data.name(), id, discordId);
+                    ConfigManager.saveLinkedProfile(profile);
+                    DiscordLink.pendingPlayersUUID.remove(id);
+                    DiscordLink.pendingPlayers.remove(code);
+                    if (!DiscordLink.config.forceLinking) {
+                        ServerPlayer player = server.getPlayerList().getPlayer(UUID.fromString(id));
+                        if (player != null) {
+                            DiscordLink.linkedPlayers.put(id, profile);
+                            DiscordLink.linkedPlayersByDiscordId.put(profile.discordId, player.getGameProfile().getName());
+                        }
                     }
+                    e.getChannel().sendMessage(DiscordLink.config.successfulVerificationMsg
+                            .replaceAll("\\{username}", data.name()).replaceAll("\\{uuid}", id)).queue();
+                    DiscordLink.logger.info(DiscordLink.config.successLinkDiscordMsg.replaceAll("\\{username}", data.name()).replaceAll("\\{discordname}", e.getAuthor().getName()));
+                } else {
+                    LinkedProfile profile = ConfigManager.getLinkedProfile(id);
+                    Member m = DiscordLink.guild.getMemberById(profile.discordId);
+                    String discordName = m != null ? m.getEffectiveName() : "Unknown user";
+                    e.getChannel().sendMessage(DiscordLink.config.alreadyLinked.replaceAll("\\{username}", profile.name).replaceAll("\\{discordname}", discordName)).queue();
+                    DiscordLink.pendingPlayersUUID.remove(id);
+                    DiscordLink.pendingPlayers.remove(code);
                 }
-                e.getChannel().sendMessage(DiscordLink.config.successfulVerificationMsg
-                        .replaceAll("\\{username}", data.name()).replaceAll("\\{uuid}", id)).queue();
-                DiscordLink.logger.info(String.format("Linked game profile %s to discord profile %s", data.name(), e.getAuthor().getName()));
             }
         }
     }

@@ -146,11 +146,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
 
     public static void postChatMessage(BaseComponent component){
         if(chatChannel != null && !stopped){
-            StringBuilder sb = new StringBuilder(component.getString());
-            for (Component c : component.getSiblings()){
-                sb.append(c.getString());
-            }
-            sendMessage(chatChannel, sb.toString());
+            sendMessage(chatChannel, component.getString());
         }
     }
 
