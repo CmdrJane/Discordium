@@ -33,6 +33,9 @@ public class DiscordConfig {
     public String verificationDisconnect = "You need to verify your account via discord. Your code is {code}. Send this code to {botname} PM.";
     public String successfulVerificationMsg = "Successfully linked discord account to your game account {username}({uuid})";
     public String commandLinkMsg = "Your code is {code}. Send this code to {botname} PM.";
+    public String codeUnlinkMsg = "Unlinked discord profile successfully";
+    public String codeUnlinkFail = "Failed to unlink discord profile, profile not found!";
+    public String mentionState = "Mention sound notifications is now set to {state}";
 
     public int config_version = 1;
 

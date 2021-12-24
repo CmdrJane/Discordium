@@ -68,9 +68,9 @@ public class ServerLanguage extends Language {
                         try {
                             String locale = languageKey;
                             Class<?> modClass = FabricLauncherBase.getClass(data.getValue());
-                            InputStream inputStream = modClass.getResourceAsStream(String.format("/assets/%s/lang/%s.json", c.getMetadata().getId(), languageKey));
+                            InputStream inputStream = modClass.getResourceAsStream(String.format("/assets/%s/lang/%s.json", meta.getId(), languageKey));
                             if (inputStream == null) {
-                                inputStream = modClass.getResourceAsStream(String.format("/assets/%s/lang/en_us.json", c.getMetadata().getId()));
+                                inputStream = modClass.getResourceAsStream(String.format("/assets/%s/lang/en_us.json", meta.getId()));
                                 logger.info(String.format("Failed to load language %s for mod %s, trying to load default en_us locale", languageKey, meta.getName()));
                                 locale = "en_us(fallback)";
                             }

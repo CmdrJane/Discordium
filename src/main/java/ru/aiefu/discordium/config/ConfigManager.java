@@ -44,10 +44,13 @@ public class ConfigManager {
     }
 
     @Nullable
-    public static LinkedProfile getLinkedProfile(String uuid) throws FileNotFoundException {
+    public static LinkedProfile getLinkedProfile(String uuid) throws IOException {
         String path = String.format("./config/discord-chat/linked-profiles/%s.json", uuid);
         if(Files.exists(Paths.get(path))) {
-            return new Gson().fromJson(new FileReader(path), LinkedProfile.class);
+            FileReader reader = new FileReader(path);
+            LinkedProfile profile = new Gson().fromJson(reader, LinkedProfile.class);
+            reader.close();
+            return profile;
         } else return null;
     }
 

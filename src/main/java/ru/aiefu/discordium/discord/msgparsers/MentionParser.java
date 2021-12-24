@@ -10,6 +10,7 @@ import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import ru.aiefu.discordium.IServerPlayer;
 import ru.aiefu.discordium.discord.DiscordLink;
 
 import java.util.HashSet;
@@ -59,7 +60,9 @@ public class MentionParser implements MsgParser{
                         player.sendMessage(cp, ChatType.CHAT, Util.NIL_UUID);
                     } else {
                         player.sendMessage(cp2.append(new TextComponent(" >> " + msg.replaceAll("(?i)!@" + player.getScoreboardName(),"§a$0§r")).withStyle(ChatFormatting.WHITE)), ChatType.CHAT, Util.NIL_UUID);
-                        player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1.0F, 1.0F);
+                        if(((IServerPlayer)player).getNotifyState()) {
+                            player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1.0F, 1.0F);
+                        }
                     }
                 }
             } else server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);

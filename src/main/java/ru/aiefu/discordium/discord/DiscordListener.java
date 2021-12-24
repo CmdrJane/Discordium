@@ -14,11 +14,10 @@ import ru.aiefu.discordium.discord.msgparsers.MsgParser;
 
 import java.util.List;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class DiscordListener extends ListenerAdapter {
 
-    private MsgParser chatHandler;
+    private final MsgParser chatHandler;
 
     public DiscordListener(){
         if(DiscordLink.config.enableMentions){
@@ -42,9 +41,6 @@ public class DiscordListener extends ListenerAdapter {
             }
         }
     }
-
-    private final Pattern pattern = Pattern.compile("(?<=!@).+?(?=!@|$|\\s)");
-    private final Pattern pattern2 = Pattern.compile("(?<=<@!).+?(?=>)");
 
     private void handleChatInput(MessageReceivedEvent e, DedicatedServer server){
         String msg = e.getMessage().getContentRaw();

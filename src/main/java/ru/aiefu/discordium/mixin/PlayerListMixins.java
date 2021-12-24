@@ -18,7 +18,7 @@ import ru.aiefu.discordium.discord.DiscordConfig;
 import ru.aiefu.discordium.discord.DiscordLink;
 import ru.aiefu.discordium.discord.VerificationData;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.SocketAddress;
 import java.util.Random;
 
@@ -44,31 +44,33 @@ public class PlayerListMixins {
     }
 
     @Inject(method = "canPlayerLogin", at =@At("HEAD"), cancellable = true)
-    private void checkLink(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Component> cir) throws FileNotFoundException {
+    private void checkLink(SocketAddress socketAddress, GameProfile gameProfile, CallbackInfoReturnable<Component> cir) throws IOException {
         DiscordConfig cfg = DiscordLink.config;
-        if(cfg.enableAccountLinking && cfg.forceLinking){
-            String uuid = gameProfile.getId().toString();
-            LinkedProfile profile = ConfigManager.getLinkedProfile(uuid);
-            if(profile != null){
+        String uuid = gameProfile.getId().toString();
+        LinkedProfile profile = null;
+        if(cfg.enableAccountLinking) {
+            profile = ConfigManager.getLinkedProfile(uuid);
+            if (profile != null) {
                 DiscordLink.linkedPlayers.put(uuid, profile);
                 DiscordLink.linkedPlayersByDiscordId.put(profile.discordId, gameProfile.getName());
-            } else {
-                if(!DiscordLink.pendingPlayersUUID.containsKey(uuid)) {
-                    int authCode = r.nextInt(100_000, 1_000_000);
-                    while (DiscordLink.pendingPlayers.containsKey(authCode)) {
-                        authCode = r.nextInt(100_000, 1_000_000);
-                    }
-                    String auth = String.valueOf(authCode);
-                    DiscordLink.pendingPlayers.put(authCode, new VerificationData(gameProfile.getName(), uuid, DiscordLink.currentTime + 600_000));
-                    DiscordLink.pendingPlayersUUID.put(uuid, authCode);
-                    cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
-                            .append(new TextComponent(auth).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
-                            .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
-                } else {
-                    cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
-                            .append(new TextComponent(" " + DiscordLink.pendingPlayersUUID.get(uuid)).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
-                            .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
+            }
+        }
+        if(cfg.enableAccountLinking && cfg.forceLinking && profile == null){
+            if(!DiscordLink.pendingPlayersUUID.containsKey(uuid)) {
+                int authCode = r.nextInt(100_000, 1_000_000);
+                while (DiscordLink.pendingPlayers.containsKey(authCode)) {
+                    authCode = r.nextInt(100_000, 1_000_000);
                 }
+                String auth = String.valueOf(authCode);
+                DiscordLink.pendingPlayers.put(authCode, new VerificationData(gameProfile.getName(), uuid, DiscordLink.currentTime + 600_000));
+                DiscordLink.pendingPlayersUUID.put(uuid, authCode);
+                cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
+                        .append(new TextComponent(auth).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
+                        .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
+            } else {
+                cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
+                        .append(new TextComponent(" " + DiscordLink.pendingPlayersUUID.get(uuid)).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
+                        .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
             }
         }
     }
