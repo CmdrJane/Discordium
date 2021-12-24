@@ -8,7 +8,7 @@ public class DiscordConfig {
     public String serverId = "";
     public boolean preloadDiscordMembers = false;
 
-    public String playerHeadsUrl = "https://ely.by/services/skins-renderer?url=http://skinsystem.ely.by/skins/{username}.png&scale=18.9&renderFace=1";
+    public String playerHeadsUrl = "http://cravatar.eu/avatar/{uuid}/400.png";
     public boolean enableWebhook = false;
     public String webhookUrl = "";
     public boolean enableAccountLinking = false;
