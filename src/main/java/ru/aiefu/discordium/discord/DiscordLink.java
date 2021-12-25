@@ -94,7 +94,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
         ServerTickEvents.START_SERVER_TICK.register(server -> currentTime = System.currentTimeMillis());
         ServerTickEvents.END_SERVER_TICK.register(server -> {
             int tickCount = server.getTickCount();
-            if(tickCount % 3600 == 0){
+            if(tickCount % 6000 == 0){
                 DiscordLink.setTopic(server.getPlayerCount(), server.getMaxPlayers());
             }
             if(tickCount % 1200 == 0){
@@ -163,7 +163,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
                 if(profile != null){
                     Member m = guild.getMemberById(profile.discordId);
                     if(m != null) {
-                        postWebHookMsg(msg, m.getNickname(), m.getEffectiveAvatarUrl());
+                        postWebHookMsg(msg, m.getEffectiveName(), m.getEffectiveAvatarUrl());
                         return;
                     }
                 }
