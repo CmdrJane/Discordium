@@ -1,6 +1,5 @@
 package ru.aiefu.discordium.language;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
@@ -52,9 +51,9 @@ public class ServerLanguage extends Language {
 
     public void loadAllLanguagesIncludingModded(String languageKey, boolean bl){
         this.isBidirectional = bl;
-        ImmutableMap.Builder<String, String> builder = ImmutableMap.builder();
+        HashMap<String, String> languageKeys = new HashMap<>();
         try {
-            loadMinecraftLanguage(languageKey, builder);
+            loadMinecraftLanguage(languageKey, languageKeys);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -75,20 +74,24 @@ public class ServerLanguage extends Language {
                                 locale = "en_us(fallback)";
                             }
                             if (inputStream != null) {
-                                loadFromJson(inputStream, builder::put);
+                                loadFromJson(inputStream, languageKeys::put);
                                 logger.info(String.format("Loaded language %s for mod %s", locale, meta.getName()));
+                                inputStream.close();
                             } else
                                 logger.error(String.format("Failed to load default en_us locale for mod %s", meta.getName()));
                         } catch (ClassNotFoundException ignored) {}
+                        catch (IOException e){
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
         }
-        this.storage = builder.build();
+        this.storage = languageKeys;
         inject(this);
     }
 
-    private void loadMinecraftLanguage(String languageKey, ImmutableMap.Builder<String, String> builder) throws IOException {
+    private void loadMinecraftLanguage(String languageKey, HashMap<String, String> languageKeys) throws IOException {
         String path = String.format("./config/discord-chat/languages/%s.json", languageKey);
         InputStream stream = null;
         String locale = languageKey;
@@ -119,8 +122,9 @@ public class ServerLanguage extends Language {
             locale = "en_us(fallback)";
         }
         if(stream != null){
-            loadFromJson(stream, builder::put);
+            loadFromJson(stream, languageKeys::put);
             logger.info("Loaded minecraft language " + locale);
+            stream.close();
         }
     }
 
