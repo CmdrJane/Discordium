@@ -98,7 +98,7 @@ public class ServerLanguage extends Language {
         if(Files.exists(Paths.get(path))){
             stream = new FileInputStream(path);
         } else {
-            HttpURLConnection connection = (HttpURLConnection) new URL("https://launchermeta.mojang.com/v1/packages/6b87c76d1edcb1fb0d933382cbb8bb8483c362c4/1.18.json").openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://launchermeta.mojang.com/v1/packages/7fcda714d4a391a711ce434fa1dbbebe73ecf179/1.18.json").openConnection();
             Gson gson = new Gson();
             JsonObject indexes = gson.fromJson(new InputStreamReader(connection.getInputStream()), JsonObject.class);
             HashMap<String, AssetsData> data = gson.fromJson(indexes.get("objects"), new TypeToken<HashMap<String, AssetsData>>(){}.getType());

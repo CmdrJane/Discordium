@@ -30,6 +30,7 @@ import ru.aiefu.discordium.ProfileLinkCommand;
 import ru.aiefu.discordium.config.ConfigManager;
 import ru.aiefu.discordium.config.LinkedProfile;
 import ru.aiefu.discordium.integraton.LightChatIntegration;
+import ru.aiefu.discordium.language.ServerLanguage;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
@@ -57,6 +58,8 @@ public class DiscordLink implements DedicatedServerModInitializer {
     public static String botName;
     public static Guild guild;
 
+    public static final ServerLanguage language = new ServerLanguage();
+
     public static boolean stopped = false;
 
     @Override
@@ -76,6 +79,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
         } catch (LoginException | InterruptedException e) {
             e.printStackTrace();
         }
+        language.loadAllLanguagesIncludingModded(config.targetLocalization, config.isBidirectional);
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
             DiscordiumCommands.register(dispatcher);
             if(config.enableAccountLinking && !config.forceLinking){
@@ -84,7 +88,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
         });
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             DiscordLink.server = (DedicatedServer) server;
-            DiscordLink.chatChannel.sendMessage(DiscordLink.config.startupMsg).queue();
+            sendMessage(chatChannel, DiscordLink.config.startupMsg);
             if(FabricLoader.getInstance().isModLoaded("lightchat")){
                 new LightChatIntegration().onGlobalMsgSubscribe();
             } else {
@@ -269,7 +273,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
 
     public static void shutdown(){
         setTopic(config.shutdownTopicMsg);
-        chatChannel.sendMessage(config.serverStopMsg).queue();
+        sendMessage(chatChannel, config.serverStopMsg);
         Unirest.shutDown();
         stopped = true;
         try {
