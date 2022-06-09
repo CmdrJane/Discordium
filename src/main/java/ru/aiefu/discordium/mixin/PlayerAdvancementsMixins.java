@@ -14,7 +14,7 @@ import ru.aiefu.discordium.discord.DiscordLink;
 public class PlayerAdvancementsMixins {
     @Shadow private ServerPlayer player;
 
-    @Inject(method = "award",  at =@At(value = "INVOKE", target = "net/minecraft/server/players/PlayerList.broadcastMessage(Lnet/minecraft/network/chat/Component;Lnet/minecraft/network/chat/ChatType;Ljava/util/UUID;)V", shift = At.Shift.AFTER))
+    @Inject(method = "award",  at =@At(value = "INVOKE", target = "net/minecraft/server/players/PlayerList.broadcastSystemMessage (Lnet/minecraft/network/chat/Component;Lnet/minecraft/resources/ResourceKey;)V", shift = At.Shift.AFTER))
     private void sendAdvancement(Advancement advancement, String string, CallbackInfoReturnable<Boolean> cir){
         DiscordLink.sendAdvancement(this.player.getScoreboardName(), advancement, this.player.getStringUUID());
     }

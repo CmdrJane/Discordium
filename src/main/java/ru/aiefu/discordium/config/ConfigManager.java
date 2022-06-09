@@ -41,6 +41,9 @@ public class ConfigManager {
         if(!Files.isDirectory(Paths.get("./config/discord-chat/languages"))){
             Files.createDirectories(Paths.get("./config/discord-chat/languages"));
         }
+        if(!Files.isDirectory(Paths.get("./config/discord-chat/languages/1.19"))){
+            Files.createDirectories(Paths.get("./config/discord-chat/languages/1.19"));
+        }
     }
 
     @Nullable

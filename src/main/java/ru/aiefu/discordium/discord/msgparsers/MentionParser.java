@@ -3,7 +3,6 @@ package ru.aiefu.discordium.discord.msgparsers;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.minecraft.ChatFormatting;
-import net.minecraft.Util;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.*;
 import net.minecraft.server.dedicated.DedicatedServer;
@@ -49,30 +48,38 @@ public class MentionParser implements MsgParser{
         }
         if(member != null) {
             String role = member.getRoles().isEmpty() ? "" : member.getRoles().get(0).getName();
-            MutableComponent cp = new TextComponent("[Discord] ").withStyle(style -> style.withColor(6955481))
+            MutableComponent cp = Component.literal("[Discord] ").withStyle(style -> style.withColor(6955481))
                     .append(getChatComponent(role, member))
-                    .append(new TextComponent(" >> " + msg).withStyle(ChatFormatting.WHITE));
+                    .append(Component.literal(" >> " + msg).withStyle(ChatFormatting.WHITE));
             if(!playerNames.isEmpty()){
-                MutableComponent cp2 = new TextComponent("[Discord] ").withStyle(Style.EMPTY.withColor(6955481))
+                MutableComponent cp2 = Component.literal("[Discord] ").withStyle(Style.EMPTY.withColor(6955481))
                         .append(getChatComponent(role, member));
                 for(ServerPlayer player : server.getPlayerList().getPlayers()){
-                    if(!playerNames.contains(player.getScoreboardName().toLowerCase())){
-                        player.sendMessage(cp, ChatType.CHAT, Util.NIL_UUID);
-                    } else {
-                        player.sendMessage(cp2.append(new TextComponent(" >> " + msg.replaceAll("(?i)!@" + player.getScoreboardName(),"§a$0§r")).withStyle(ChatFormatting.WHITE)), ChatType.CHAT, Util.NIL_UUID);
-                        if(((IServerPlayer)player).getNotifyState()) {
-                            player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1.0F, 1.0F);
+                    if(((IServerPlayer)player).isAcceptingChatType(ChatType.CHAT)) {
+                        if (!playerNames.contains(player.getScoreboardName().toLowerCase())) {
+                            player.sendSystemMessage(cp);
+                        } else {
+                            player.sendSystemMessage(cp2.append(Component.literal(" >> " + msg.replaceAll("(?i)!@" + player.getScoreboardName(), "§a$0§r")).withStyle(ChatFormatting.WHITE)));
+                            if (((IServerPlayer) player).getNotifyState()) {
+                                player.playNotifySound(SoundEvents.NOTE_BLOCK_PLING, SoundSource.MASTER, 1.0F, 1.0F);
+                            }
                         }
                     }
                 }
-            } else server.getPlayerList().broadcastMessage(cp, ChatType.CHAT, Util.NIL_UUID);
+            } else {
+                server.getPlayerList().getPlayers().forEach(player -> {
+                    if(((IServerPlayer)player).isAcceptingChatType(ChatType.CHAT)){
+                        player.sendSystemMessage(cp);
+                    }
+                });
+            }
         }
     }
 
     private MutableComponent getChatComponent(String role, Member member){
         String tag = member.getUser().getAsTag();
-        return new TextComponent(role + " " + member.getEffectiveName()).setStyle(Style.EMPTY.withColor(member.getColorRaw())
-                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent(Language.getInstance().getOrDefault("chat.copy.click") + " " + tag).withStyle(ChatFormatting.GREEN)))
+        return Component.literal(role + " " + member.getEffectiveName()).setStyle(Style.EMPTY.withColor(member.getColorRaw())
+                .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, Component.literal(Language.getInstance().getOrDefault("chat.copy.click") + " " + tag).withStyle(ChatFormatting.GREEN)))
                 .withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, tag)));
     }
 }

@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import ru.aiefu.discordium.discord.DiscordLink;
 
 public class DiscordiumCommands {
@@ -19,7 +19,7 @@ public class DiscordiumCommands {
     private static int switchNotifySoundState(CommandSourceStack source, boolean state) throws CommandSyntaxException {
         IServerPlayer player = (IServerPlayer) source.getPlayerOrException();
         player.setNotifyState(state);
-        source.sendSuccess(new TextComponent(DiscordLink.config.mentionState.replaceAll("\\{state}", String.valueOf(state))), false);
+        source.sendSuccess(Component.literal(DiscordLink.config.mentionState.replaceAll("\\{state}", String.valueOf(state))), false);
         return 0;
     }
 }

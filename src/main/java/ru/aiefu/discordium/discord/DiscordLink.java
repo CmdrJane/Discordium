@@ -10,13 +10,12 @@ import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.fabricmc.api.DedicatedServerModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.locale.Language;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerPlayer;
 import okhttp3.OkHttpClient;
@@ -29,7 +28,6 @@ import ru.aiefu.discordium.OnPlayerMessageEvent;
 import ru.aiefu.discordium.ProfileLinkCommand;
 import ru.aiefu.discordium.config.ConfigManager;
 import ru.aiefu.discordium.config.LinkedProfile;
-import ru.aiefu.discordium.integraton.LightChatIntegration;
 import ru.aiefu.discordium.language.ServerLanguage;
 
 import javax.security.auth.login.LoginException;
@@ -80,7 +78,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
             e.printStackTrace();
         }
         language.loadAllLanguagesIncludingModded(config.targetLocalization, config.isBidirectional);
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> {
             DiscordiumCommands.register(dispatcher);
             if(config.enableAccountLinking && !config.forceLinking){
                 ProfileLinkCommand.register(dispatcher);
@@ -89,11 +87,7 @@ public class DiscordLink implements DedicatedServerModInitializer {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             DiscordLink.server = (DedicatedServer) server;
             sendMessage(chatChannel, DiscordLink.config.startupMsg);
-            if(FabricLoader.getInstance().isModLoaded("lightchat")){
-                new LightChatIntegration().onGlobalMsgSubscribe();
-            } else {
-                OnPlayerMessageEvent.EVENT.register(DiscordLink::onPlayerMessage);
-            }
+            OnPlayerMessageEvent.EVENT.register(DiscordLink::onPlayerMessage);
         });
         ServerTickEvents.START_SERVER_TICK.register(server -> currentTime = System.currentTimeMillis());
         ServerTickEvents.END_SERVER_TICK.register(server -> {
@@ -149,13 +143,13 @@ public class DiscordLink implements DedicatedServerModInitializer {
         }
     }
 
-    public static void postChatMessage(BaseComponent component){
+    public static void postChatMessage(MutableComponent component){
         if(chatChannel != null && !stopped){
             sendMessage(chatChannel, component.getString());
         }
     }
 
-    public static void onPlayerMessage(ServerPlayer player, String msg, BaseComponent textComponent){
+    public static void onPlayerMessage(ServerPlayer player, String msg, MutableComponent textComponent){
         if(config.enableMentions) {
             msg = parseDiscordMentions(msg);
         }

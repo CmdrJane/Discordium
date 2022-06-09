@@ -2,7 +2,7 @@ package ru.aiefu.discordium;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.network.chat.BaseComponent;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.server.level.ServerPlayer;
 
 
@@ -16,5 +16,5 @@ public interface OnPlayerMessageEvent {
                 }
             });
 
-    void onMessage(ServerPlayer player, String msg, BaseComponent textComponent);
+    void onMessage(ServerPlayer player, String msg, MutableComponent textComponent);
 }

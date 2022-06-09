@@ -92,13 +92,13 @@ public class ServerLanguage extends Language {
     }
 
     private void loadMinecraftLanguage(String languageKey, HashMap<String, String> languageKeys) throws IOException {
-        String path = String.format("./config/discord-chat/languages/%s.json", languageKey);
+        String path = String.format("./config/discord-chat/languages/1.19/%s.json", languageKey);
         InputStream stream = null;
         String locale = languageKey;
         if(Files.exists(Paths.get(path))){
             stream = new FileInputStream(path);
         } else {
-            HttpURLConnection connection = (HttpURLConnection) new URL("https://launchermeta.mojang.com/v1/packages/7fcda714d4a391a711ce434fa1dbbebe73ecf179/1.18.json").openConnection();
+            HttpURLConnection connection = (HttpURLConnection) new URL("https://launchermeta.mojang.com/v1/packages/4d2c1138477c7aafe8fb370de11ea5b23a963edc/1.19.json").openConnection();
             Gson gson = new Gson();
             JsonObject indexes = gson.fromJson(new InputStreamReader(connection.getInputStream()), JsonObject.class);
             HashMap<String, AssetsData> data = gson.fromJson(indexes.get("objects"), new TypeToken<HashMap<String, AssetsData>>(){}.getType());

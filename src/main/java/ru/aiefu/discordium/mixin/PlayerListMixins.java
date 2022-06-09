@@ -4,7 +4,6 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import org.spongepowered.asm.mixin.Mixin;
@@ -64,13 +63,13 @@ public class PlayerListMixins {
                 String auth = String.valueOf(authCode);
                 DiscordLink.pendingPlayers.put(authCode, new VerificationData(gameProfile.getName(), uuid, DiscordLink.currentTime + 600_000));
                 DiscordLink.pendingPlayersUUID.put(uuid, authCode);
-                cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
-                        .append(new TextComponent(auth).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
-                        .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
+                cir.setReturnValue(Component.literal(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
+                        .append(Component.literal(auth).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
+                        .append(Component.literal(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
             } else {
-                cir.setReturnValue(new TextComponent(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
-                        .append(new TextComponent(" " + DiscordLink.pendingPlayersUUID.get(uuid)).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
-                        .append(new TextComponent(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
+                cir.setReturnValue(Component.literal(cfg.vDisconnectMsg1.replaceAll("\\{botname}", DiscordLink.botName))
+                        .append(Component.literal(" " + DiscordLink.pendingPlayersUUID.get(uuid)).withStyle(style -> style.withColor(ChatFormatting.GREEN)))
+                        .append(Component.literal(cfg.vDisconnectMsg2.replaceAll("\\{botname}", DiscordLink.botName)).withStyle(ChatFormatting.WHITE)));
             }
         }
     }
