@@ -107,11 +107,13 @@ public class DiscordListener extends ListenerAdapter {
                     DiscordLink.logger.info(DiscordLink.config.successLinkDiscordMsg.replaceAll("\\{username}", data.name()).replaceAll("\\{discordname}", e.getAuthor().getName()));
                 } else {
                     LinkedProfile profile = ConfigManager.getLinkedProfile(id);
-                    Member m = DiscordLink.guild.getMemberById(profile.discordId);
-                    String discordName = m != null ? m.getEffectiveName() : "Unknown user";
-                    e.getChannel().sendMessage(DiscordLink.config.alreadyLinked.replaceAll("\\{username}", profile.name).replaceAll("\\{discordname}", discordName)).queue();
-                    DiscordLink.pendingPlayersUUID.remove(id);
-                    DiscordLink.pendingPlayers.remove(code);
+                    if(profile != null) {
+                        Member m = DiscordLink.guild.getMemberById(profile.discordId);
+                        String discordName = m != null ? m.getEffectiveName() : "Unknown user";
+                        e.getChannel().sendMessage(DiscordLink.config.alreadyLinked.replaceAll("\\{username}", profile.name).replaceAll("\\{discordname}", discordName)).queue();
+                        DiscordLink.pendingPlayersUUID.remove(id);
+                        DiscordLink.pendingPlayers.remove(code);
+                    }
                 }
             }
         }

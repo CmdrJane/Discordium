@@ -11,6 +11,11 @@ version = project.mod_version
 group = project.maven_group
 
 repositories {
+	maven {
+		url 'https://repo.maven.apache.org/maven2'
+		name 'Maven Central'
+	}
+
 	// Add repositories to retrieve artifacts from in here.
 	// You should only use this when depending on other mods because
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
@@ -26,8 +31,8 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	include "com.konghq:unirest-java:3.13.4:standalone"
-	include(modImplementation ("net.dv8tion:JDA:5.0.0-alpha.1") {
+	include 'com.konghq:unirest-java:3.13.10:standalone'
+	include(modImplementation ("net.dv8tion:JDA:5.0.0-alpha.13") {
 		exclude module: 'opus-java'
 	})
 	include(modImplementation ("com.konghq:unirest-java:3.13.4:standalone")){
@@ -35,16 +40,16 @@ dependencies {
 		exclude group: "org.apache.httpcomponents", module: "httpclient"
 		exclude group: "commons-logging", module: "commons-logging"
 	}
-	include "com.squareup.okhttp3:okhttp:3.13.0"
-	include "com.squareup.okio:okio:1.17.2"
-	include "org.jetbrains:annotations:16.0.1"
-	include "org.apache.commons:commons-collections4:4.1"
+	include 'com.squareup.okhttp3:okhttp:4.10.0'
+	include 'com.squareup.okio:okio:3.1.0'
+	include 'org.jetbrains:annotations:23.0.0'
+	include 'org.apache.commons:commons-collections4:4.4'
 	include "com.neovisionaries:nv-websocket-client:2.14"
 	include "com.google.code.findbugs:jsr305:3.0.2"
 	include "net.sf.trove4j:trove4j:3.0.3"
-	include "com.fasterxml.jackson.core:jackson-annotations:2.10.1"
-	include "com.fasterxml.jackson.core:jackson-core:2.10.1"
-	include "com.fasterxml.jackson.core:jackson-databind:2.10.1"
+	include 'com.fasterxml.jackson.core:jackson-annotations:2.13.3'
+	include 'com.fasterxml.jackson.core:jackson-core:2.13.3'
+	include 'com.fasterxml.jackson.core:jackson-databind:2.13.3'
 }
 
 processResources {
